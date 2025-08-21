@@ -20,8 +20,6 @@ namespace ProjetoFinal.ViewModels
         private Random _random = new Random();
         private double _alienVelocidade = 2;
         private int _alienTiroChance = 1;
-
-        // NOVO: Variável para a velocidade de descida dos aliens
         private double _alienDescidaVelocidade = 30;
 
         private int _placar;
@@ -40,6 +38,8 @@ namespace ProjetoFinal.ViewModels
 
         public string PlacarFormatado => $"Placar: {Placar}";
 
+        // Adicionado: Propriedade para formatar e exibir as vidas
+        public string VidasFormatado => $"Vidas: {_player?.Vidas ?? 0}";
 
         public MainViewModel()
         {
@@ -52,10 +52,11 @@ namespace ProjetoFinal.ViewModels
         public void IniciarJogo()
         {
             _player = new Player(GameSpace);
+            OnPropertyChanged(nameof(VidasFormatado)); // Adicionado: Notifica a UI para atualizar as vidas no início
             CriarInimigos();
 
             _gameTimer = new DispatcherTimer();
-            _gameTimer.Interval = TimeSpan.FromMilliseconds(16); // Aproximadamente 60 FPS
+            _gameTimer.Interval = TimeSpan.FromMilliseconds(16);
             _gameTimer.Tick += GameLoop_Tick;
             _gameTimer.Start();
         }
@@ -66,21 +67,19 @@ namespace ProjetoFinal.ViewModels
             double startY = 50;
             int espacamento = 80;
 
-            for (int i = 1; i <= 3; i++) // 3 Tipos de aliens (linhas)
+            for (int i = 1; i <= 3; i++)
             {
-                for (int j = 0; j < 10; j++) // 10 aliens por linha
+                for (int j = 0; j < 10; j++)
                 {
                     _aliens.Add(new Alien(GameSpace, i, startX + j * espacamento, startY + (i - 1) * espacamento));
                 }
             }
         }
 
-
         private void GameLoop_Tick(object sender, object e)
         {
             _player.Mover();
 
-            // Lógica de movimento dos tiros do jogador
             for (int i = _tiros.Count - 1; i >= 0; i--)
             {
                 var tiro = _tiros[i];
@@ -92,7 +91,6 @@ namespace ProjetoFinal.ViewModels
                 }
             }
 
-            // Lógica de movimento dos tiros dos aliens
             for (int i = _tirosDosAliens.Count - 1; i >= 0; i--)
             {
                 var tiro = _tirosDosAliens[i];
@@ -103,8 +101,7 @@ namespace ProjetoFinal.ViewModels
                     _tirosDosAliens.RemoveAt(i);
                 }
             }
-            
-            // Lógica de movimento dos aliens
+
             bool inverterDirecao = false;
             foreach (var alien in _aliens)
             {
@@ -122,14 +119,12 @@ namespace ProjetoFinal.ViewModels
             {
                 foreach (var alien in _aliens)
                 {
-                    alien.Direcao *= -1; // Inverte a direção
-                    // ALTERADO: Passa a velocidade de descida como parâmetro
+                    alien.Direcao *= -1;
                     alien.MoverParaBaixo(_alienDescidaVelocidade);
                 }
-                 _alienVelocidade += 0.5; // Aumenta a velocidade
+                _alienVelocidade += 0.5;
             }
 
-            // Lógica de tiro dos aliens (ex: 1% de chance por tick)
             if (_random.Next(100) < _alienTiroChance && _aliens.Any())
             {
                 var atirador = _aliens[_random.Next(_aliens.Count)];
@@ -138,14 +133,11 @@ namespace ProjetoFinal.ViewModels
                 _tirosDosAliens.Add(new Tiro(GameSpace, x, y, false));
             }
 
-
-            // Detectar colisões
             DetectarColisoes();
         }
-        
+
         private void DetectarColisoes()
         {
-            // Colisão: Tiro do Player com Alien
             for (int i = _tiros.Count - 1; i >= 0; i--)
             {
                 var tiro = _tiros[i];
@@ -156,7 +148,6 @@ namespace ProjetoFinal.ViewModels
                     var alien = _aliens[j];
                     var alienRect = new Windows.Foundation.Rect(Canvas.GetLeft(alien.Corpo), Canvas.GetTop(alien.Corpo), alien.Corpo.Width, alien.Corpo.Height);
 
-                    // Lógica de intersecção
                     if (tiroRect.Left < alienRect.Right &&
                         tiroRect.Right > alienRect.Left &&
                         tiroRect.Top < alienRect.Bottom &&
@@ -164,34 +155,49 @@ namespace ProjetoFinal.ViewModels
                     {
                         tiro.Destruir();
                         _tiros.RemoveAt(i);
-                        
-                        Placar += alien.Pontos; // Isto vai acionar o 'set' da propriedade e notificar a UI
-
+                        Placar += alien.Pontos;
                         alien.Destruir();
                         _aliens.RemoveAt(j);
-                        
                         if (!_aliens.Any())
                         {
                             ProximoNivel();
                         }
-                        
-                        break; 
+                        break;
                     }
+                }
+            }
+
+            for (int i = _tirosDosAliens.Count - 1; i >= 0; i--)
+            {
+                var tiro = _tirosDosAliens[i];
+                var tiroRect = new Windows.Foundation.Rect(Canvas.GetLeft(tiro.Corpo), Canvas.GetTop(tiro.Corpo), tiro.Corpo.Width, tiro.Corpo.Height);
+                var playerRect = new Windows.Foundation.Rect(Canvas.GetLeft(_player.Corpo), Canvas.GetTop(_player.Corpo), _player.Corpo.Width, _player.Corpo.Height);
+
+                if (tiroRect.Left < playerRect.Right &&
+                    tiroRect.Right > playerRect.Left &&
+                    tiroRect.Top < playerRect.Bottom &&
+                    tiroRect.Bottom > playerRect.Top)
+                {
+                    tiro.Destruir();
+                    _tirosDosAliens.RemoveAt(i);
+                    _player.PerdeVida();
+                    OnPropertyChanged(nameof(VidasFormatado)); // Adicionado: Notifica a UI de que as vidas mudaram
+
+                    if (_player.Vidas <= 0)
+                    {
+                        _gameTimer.Stop();
+                    }
+                    break;
                 }
             }
         }
 
-        // ALTERADO: Método para avançar de nível
         private void ProximoNivel()
         {
             _alienTiroChance += 1;
-
-            // NOVO: Aumenta a velocidade de descida a cada nível
-            _alienDescidaVelocidade += 5; // Você pode ajustar o valor "5" para tornar o jogo mais fácil ou difícil
-
+            _alienDescidaVelocidade += 5;
             CriarInimigos();
         }
-
 
         [RelayCommand]
         private void StartMoving(string direction)

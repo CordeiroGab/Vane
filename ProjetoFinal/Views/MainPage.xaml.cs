@@ -2,65 +2,45 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using ProjetoFinal.ViewModels;
-using Windows.System;
 
-namespace ProjetoFinal
+namespace ProjetoFinal.Views
 {
     public sealed partial class MainPage : Page
     {
+        // Renomeado para seguir a convenção de nomenclatura
         public MainViewModel ViewModel { get; }
-        private bool _isGameInitialized = false;
 
         public MainPage()
         {
-            this.InitializeComponent();
             ViewModel = new MainViewModel();
-            this.DataContext = ViewModel;
+            this.InitializeComponent(); // Este método é crucial e deve ser chamado aqui
+
+            // O Loaded event é uma forma mais segura de garantir que o GameSpace foi renderizado
+            this.Loaded += MainPage_Loaded;
         }
 
-        private void OnLoaded(object sender, RoutedEventArgs e)
+        private void MainPage_Loaded(object sender, RoutedEventArgs e)
         {
-            // Garante que o jogo só seja inicializado uma vez.
-            if (!_isGameInitialized)
-            {
-                _isGameInitialized = true;
+            // Passa a referência do Canvas para o ViewModel
+            ViewModel.GameSpace = this.GameSpace;
+            ViewModel.IniciarJogo();
 
-                // Prepara o ViewModel e o foco
-                ViewModel.GameSpace = GameSpace;
-                GameSpace.Focus(FocusState.Programmatic);
-
-                // Inicia o jogo imediatamente após a página ser carregada
-                ViewModel.IniciarJogo();
-            }
-            
-            // O manipulador de SizeChanged não é mais necessário para iniciar o jogo.
-            // Você pode remover o método GameSpace_SizeChanged e a linha abaixo.
-            // GameSpace.SizeChanged -= GameSpace_SizeChanged;
+            // Foca o Canvas para que ele possa receber eventos de teclado
+            GameSpace.Focus(FocusState.Programmatic);
         }
-
-        // O método GameSpace_SizeChanged pode ser completamente removido.
-        /*
-        private void GameSpace_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            // Lógica de inicialização removida daqui
-        }
-        */
 
         private void Espaco_KeyDown(object sender, KeyRoutedEventArgs e)
         {
             switch (e.Key)
             {
-                case VirtualKey.Left:
+                case Windows.System.VirtualKey.Left:
                     ViewModel.StartMovingCommand.Execute("Left");
                     break;
-                case VirtualKey.Right:
+                case Windows.System.VirtualKey.Right:
                     ViewModel.StartMovingCommand.Execute("Right");
                     break;
-                case VirtualKey.Space:
-                    if (!e.KeyStatus.WasKeyDown)
-                    {
-                        ViewModel.AtirarCommand.Execute(null);
-                    }
+                case Windows.System.VirtualKey.Space:
+                    ViewModel.AtirarCommand.Execute(null);
                     break;
             }
         }
@@ -69,10 +49,10 @@ namespace ProjetoFinal
         {
             switch (e.Key)
             {
-                case VirtualKey.Left:
+                case Windows.System.VirtualKey.Left:
                     ViewModel.StopMovingCommand.Execute("Left");
                     break;
-                case VirtualKey.Right:
+                case Windows.System.VirtualKey.Right:
                     ViewModel.StopMovingCommand.Execute("Right");
                     break;
             }

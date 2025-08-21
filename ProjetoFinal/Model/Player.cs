@@ -10,6 +10,7 @@ namespace ProjetoFinal.Model
         private Canvas _gameSpace;
         public int Direcao { get; set; } // -1 para Esquerda, 1 para Direita, 0 para Parado
         private double Velocidade { get; } = 10;
+        public int Vidas { get; private set; } = 5; // Adicionado: Vidas do jogador
 
         public Player(Canvas gameSpace)
         {
@@ -38,6 +39,12 @@ namespace ProjetoFinal.Model
             {
                 Canvas.SetLeft(Corpo, novaPosicao);
             }
+        }
+
+        // Adicionado: Método para quando o jogador perde uma vida
+        public void PerdeVida()
+        {
+            Vidas--;
         }
     }
 }

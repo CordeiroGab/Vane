@@ -1241,3 +1241,4 @@ C:\Users\GabrielN\Desktop\Vane-main - Copia\ProjetoFinal\obj\Debug\net9.0-deskto
 C:\Users\GabrielN\Desktop\Vane-main - Copia\ProjetoFinal\obj\Debug\net9.0-desktop\ProjetoFinal.pdb
 C:\Users\GabrielN\Desktop\Vane-main - Copia\ProjetoFinal\obj\Debug\net9.0-desktop\ProjetoFinal.genruntimeconfig.cache
 C:\Users\GabrielN\Desktop\Vane-main - Copia\ProjetoFinal\obj\Debug\net9.0-desktop\ref\ProjetoFinal.dll
+C:\Users\GabrielN\Desktop\Vane-main - Copia\ProjetoFinal\obj\Debug\net9.0-desktop\ProjetoFinal.sourcelink.json

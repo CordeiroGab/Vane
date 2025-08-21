@@ -1,0 +1,43 @@
+<Project Sdk="Uno.Sdk">
+    <PropertyGroup>
+        <TargetFrameworks>net9.0-desktop</TargetFrameworks>
+
+        <OutputType>Exe</OutputType>
+        <UnoSingleProject>true</UnoSingleProject>
+
+        <!-- Display name -->
+        <ApplicationTitle>ProjetoFinal</ApplicationTitle>
+        <!-- App Identifier -->
+        <ApplicationId>com.companyname.ProjetoFinal</ApplicationId>
+        <!-- Versions -->
+        <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+        <ApplicationVersion>1</ApplicationVersion>
+        <!-- Package Publisher -->
+        <ApplicationPublisher>O=ProjetoFinal</ApplicationPublisher>
+        <!-- Package Description -->
+        <Description>ProjetoFinal powered by Uno Platform.</Description>
+
+        <!--
+          UnoFeatures let's you quickly add and manage implicit package references based on the features you want to use.
+          https://aka.platform.uno/singleproject-features
+        -->
+        <UnoFeatures>
+            SkiaRenderer;
+        </UnoFeatures>
+    </PropertyGroup>
+    <ItemGroup>
+      <Content Update="Assets\Sons\SomTIro.mp3">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <Content Update="Assets\Sons\SomExplosão.mp4">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+    <ItemGroup>
+      <Compile Update="Views\MainPage.xaml.cs">
+        <DependentUpon>MainPage.xaml</DependentUpon>
+        <IsDefaultItem>true</IsDefaultItem>
+      </Compile>
+    </ItemGroup>
+
+</Project>

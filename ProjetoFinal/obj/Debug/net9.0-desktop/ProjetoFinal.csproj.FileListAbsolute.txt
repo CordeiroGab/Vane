@@ -1235,10 +1235,10 @@ C:\Users\GabrielN\Desktop\Vane-main - Copia\ProjetoFinal\obj\Debug\net9.0-deskto
 C:\Users\GabrielN\Desktop\Vane-main - Copia\ProjetoFinal\obj\Debug\net9.0-desktop\ProjetoFinal.AssemblyInfoInputs.cache
 C:\Users\GabrielN\Desktop\Vane-main - Copia\ProjetoFinal\obj\Debug\net9.0-desktop\ProjetoFinal.AssemblyInfo.cs
 C:\Users\GabrielN\Desktop\Vane-main - Copia\ProjetoFinal\obj\Debug\net9.0-desktop\ProjetoFinal.csproj.CoreCompileInputs.cache
+C:\Users\GabrielN\Desktop\Vane-main - Copia\ProjetoFinal\obj\Debug\net9.0-desktop\ProjetoFinal.sourcelink.json
 C:\Users\GabrielN\Desktop\Vane-main - Copia\ProjetoFinal\obj\Debug\net9.0-desktop\ProjetoF.55FE4514.Up2Date
 C:\Users\GabrielN\Desktop\Vane-main - Copia\ProjetoFinal\obj\Debug\net9.0-desktop\ProjetoFinal.dll
 C:\Users\GabrielN\Desktop\Vane-main - Copia\ProjetoFinal\obj\Debug\net9.0-desktop\refint\ProjetoFinal.dll
 C:\Users\GabrielN\Desktop\Vane-main - Copia\ProjetoFinal\obj\Debug\net9.0-desktop\ProjetoFinal.pdb
 C:\Users\GabrielN\Desktop\Vane-main - Copia\ProjetoFinal\obj\Debug\net9.0-desktop\ProjetoFinal.genruntimeconfig.cache
 C:\Users\GabrielN\Desktop\Vane-main - Copia\ProjetoFinal\obj\Debug\net9.0-desktop\ref\ProjetoFinal.dll
-C:\Users\GabrielN\Desktop\Vane-main - Copia\ProjetoFinal\obj\Debug\net9.0-desktop\ProjetoFinal.sourcelink.json

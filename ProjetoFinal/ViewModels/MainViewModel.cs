@@ -6,6 +6,7 @@ using ProjetoFinal.Model;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks; // Adicionado
 
 namespace ProjetoFinal.ViewModels
 {
@@ -17,7 +18,7 @@ namespace ProjetoFinal.ViewModels
         private ObservableCollection<Tiro> _tiros;
         private ObservableCollection<Alien> _aliens;
         private ObservableCollection<Tiro> _tirosDosAliens;
-        private ObservableCollection<BlocoProtecao> _blocosProtecao; // Adicionado
+        private ObservableCollection<BlocoProtecao> _blocosProtecao;
         private Random _random = new Random();
         private double _alienVelocidade = 2;
         private int _alienTiroChance = 1;
@@ -47,6 +48,10 @@ namespace ProjetoFinal.ViewModels
 
         public string PlacarFormatado => $"Placar: {Placar}";
         public string VidasFormatado => $"Vidas: {_player?.Vidas ?? 0}";
+        
+        // Evento para notificar a View sobre o fim do jogo
+        public event Func<Task> GameEnded;
+
 
         public MainViewModel()
         {
@@ -252,9 +257,13 @@ namespace ProjetoFinal.ViewModels
             }
         }
         
-        private void FimDeJogo()
+        private async void FimDeJogo()
         {
             _gameTimer?.Stop();
+            if (GameEnded != null)
+            {
+                await GameEnded.Invoke();
+            }
         }
 
         private void ProximoNivel()

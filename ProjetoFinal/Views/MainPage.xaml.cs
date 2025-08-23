@@ -1,7 +1,9 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
+using ProjetoFinal.Model;
 using ProjetoFinal.ViewModels;
+using System.Threading.Tasks;
 
 namespace ProjetoFinal.Views
 {
@@ -27,6 +29,36 @@ namespace ProjetoFinal.Views
 
             // Foca o Canvas para que ele possa receber eventos de teclado
             GameSpace.Focus(FocusState.Programmatic);
+
+            // Assina o evento de fim de jogo
+            ViewModel.GameEnded += OnGameEnded;
+        }
+
+        private async Task OnGameEnded()
+        {
+            var nicknameDialog = new ContentDialog
+            {
+                Title = "Game Over",
+                Content = new TextBox { PlaceholderText = "Digite seu apelido" },
+                PrimaryButtonText = "Salvar Pontuação",
+                CloseButtonText = "Voltar ao Menu",
+                XamlRoot = this.XamlRoot
+            };
+
+            var result = await nicknameDialog.ShowAsync();
+
+            if (result == ContentDialogResult.Primary)
+            {
+                var nickname = (nicknameDialog.Content as TextBox)?.Text;
+                if (!string.IsNullOrWhiteSpace(nickname))
+                {
+                    var scoreEntry = new ScoreEntry { Nickname = nickname, Score = ViewModel.Placar };
+                    await ScoreManager.SaveScoreAsync(scoreEntry);
+                }
+            }
+    
+            // Volta para a página inicial
+            this.Frame.Navigate(typeof(StartPage));
         }
 
         private void Espaco_KeyDown(object sender, KeyRoutedEventArgs e)

@@ -15,5 +15,11 @@ namespace ProjetoFinal.Views
             // Navega para a página principal do jogo
             this.Frame.Navigate(typeof(MainPage));
         }
+
+        private void ScoresButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Navega para a página de scores
+            this.Frame.Navigate(typeof(ScoresPage));
+        }
     }
 }

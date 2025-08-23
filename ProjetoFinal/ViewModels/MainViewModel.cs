@@ -6,7 +6,7 @@ using ProjetoFinal.Model;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading.Tasks; // Adicionado
+using System.Threading.Tasks;
 
 namespace ProjetoFinal.ViewModels
 {
@@ -14,9 +14,11 @@ namespace ProjetoFinal.ViewModels
     {
         public Canvas? GameSpace { get; set; }
         private DispatcherTimer? _gameTimer;
+        private DispatcherTimer? _alienVermelhoTimer; // Timer para o Alien Vermelho
         private Player? _player;
         private ObservableCollection<Tiro> _tiros;
         private ObservableCollection<Alien> _aliens;
+        private ObservableCollection<Alien> _aliensVermelhos; // Coleção para Aliens Vermelhos
         private ObservableCollection<Tiro> _tirosDosAliens;
         private ObservableCollection<BlocoProtecao> _blocosProtecao;
         private Random _random = new Random();
@@ -49,14 +51,13 @@ namespace ProjetoFinal.ViewModels
         public string PlacarFormatado => $"Placar: {Placar}";
         public string VidasFormatado => $"Vidas: {_player?.Vidas ?? 0}";
         
-        // Evento para notificar a View sobre o fim do jogo
         public event Func<Task> GameEnded;
-
 
         public MainViewModel()
         {
             _tiros = new ObservableCollection<Tiro>();
             _aliens = new ObservableCollection<Alien>();
+            _aliensVermelhos = new ObservableCollection<Alien>(); // Inicializa a coleção
             _tirosDosAliens = new ObservableCollection<Tiro>();
             _blocosProtecao = new ObservableCollection<BlocoProtecao>();
             Placar = 0;
@@ -73,6 +74,26 @@ namespace ProjetoFinal.ViewModels
             _gameTimer.Interval = TimeSpan.FromMilliseconds(16);
             _gameTimer.Tick += GameLoop_Tick;
             _gameTimer.Start();
+
+            // Configura e inicia o timer do Alien Vermelho
+            _alienVermelhoTimer = new DispatcherTimer();
+            _alienVermelhoTimer.Interval = TimeSpan.FromSeconds(40);
+            _alienVermelhoTimer.Tick += AlienVermelhoTimer_Tick;
+            _alienVermelhoTimer.Start();
+        }
+
+        private void AlienVermelhoTimer_Tick(object sender, object e)
+        {
+            CriarAlienVermelho();
+        }
+
+        private void CriarAlienVermelho()
+        {
+            if (GameSpace != null)
+            {
+                // Cria o Alien Vermelho fora da tela, à esquerda
+                _aliensVermelhos.Add(new Alien(GameSpace, 4, -60, 20));
+            }
         }
 
         private void CriarInimigos()
@@ -136,7 +157,19 @@ namespace ProjetoFinal.ViewModels
                     _tirosDosAliens.RemoveAt(i);
                 }
             }
-            
+
+            // Movimenta o Alien Vermelho
+            for (int i = _aliensVermelhos.Count - 1; i >= 0; i--)
+            {
+                var alien = _aliensVermelhos[i];
+                alien.Mover();
+                if (Canvas.GetLeft(alien.Corpo) > GameSpace.ActualWidth)
+                {
+                    alien.Destruir();
+                    _aliensVermelhos.RemoveAt(i);
+                }
+            }
+
             bool inverterDirecao = false;
             foreach (var alien in _aliens)
             {
@@ -206,6 +239,24 @@ namespace ProjetoFinal.ViewModels
                 }
                 if (tiroAtingiuAlgo) continue;
 
+                // Com Aliens Vermelhos
+                for (int j = _aliensVermelhos.Count - 1; j >= 0; j--)
+                {
+                    var alien = _aliensVermelhos[j];
+                    var alienRect = new Windows.Foundation.Rect(Canvas.GetLeft(alien.Corpo), Canvas.GetTop(alien.Corpo), alien.Corpo.Width, alien.Corpo.Height);
+                    if (tiroRect.Intersects(alienRect))
+                    {
+                        tiro.Destruir();
+                        _tiros.RemoveAt(i);
+                        Placar += alien.Pontos; // Adiciona os pontos aleatórios
+                        alien.Destruir();
+                        _aliensVermelhos.RemoveAt(j);
+                        tiroAtingiuAlgo = true;
+                        break;
+                    }
+                }
+                if (tiroAtingiuAlgo) continue;
+
                 // Com Blocos
                 for (int j = _blocosProtecao.Count - 1; j >= 0; j--)
                 {
@@ -260,6 +311,7 @@ namespace ProjetoFinal.ViewModels
         private async void FimDeJogo()
         {
             _gameTimer?.Stop();
+            _alienVermelhoTimer?.Stop(); // Para o timer do alien vermelho
             if (GameEnded != null)
             {
                 await GameEnded.Invoke();
@@ -303,7 +355,6 @@ namespace ProjetoFinal.ViewModels
         }
     }
 
-    // Classe auxiliar para facilitar a leitura da detecção de colisão
     public static class RectExtensions
     {
         public static bool Intersects(this Windows.Foundation.Rect rectA, Windows.Foundation.Rect rectB)

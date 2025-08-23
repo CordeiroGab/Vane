@@ -21,7 +21,7 @@ namespace ProjetoFinal.Model
         public BlocoProtecao(Canvas gameSpace, double x, double y)
         {
             _gameSpace = gameSpace;
-            Vida = 10; // ALTERADO: Vida inicial agora é 10
+            Vida = 10; // Vida inicial do bloco é 10
 
             Corpo = new Rectangle
             {
@@ -43,22 +43,22 @@ namespace ProjetoFinal.Model
 
         private void AtualizarCor()
         {
-            // ALTERADO: Lógica de cores para 10 de vida
+            /// Lógica de cores para 10 de vida
             if (Vida > 7)
             {
-                Corpo.Fill = _corVidaCheia; // Ex: 10, 9, 8
+                Corpo.Fill = _corVidaCheia; //  10, 9, 8
             }
             else if (Vida > 4)
             {
-                Corpo.Fill = _corMeiaVida; // Ex: 7, 6, 5
+                Corpo.Fill = _corMeiaVida; //  7, 6, 5
             }
             else if (Vida > 1)
             {
-                Corpo.Fill = _corPoucaVida; // Ex: 4, 3, 2
+                Corpo.Fill = _corPoucaVida; // E4, 3, 2
             }
             else
             {
-                Corpo.Fill = _corCritica; // Ex: 1
+                Corpo.Fill = _corCritica; // : 1
             }
         }
 
